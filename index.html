@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SIM – Security Incident Mapping</title>
+<style>
+  :root { --navy:#1F3864; --blue:#2E5496; --light:#EEF3FA; --red:#B42318; --ok:#067647; --text:#1d2939; --line:#D0D5DD; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: Arial, Helvetica, sans-serif; color:var(--text); background:#fff; line-height:1.5; }
+  header { background:var(--navy); color:#fff; padding:14px 20px; display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:5; }
+  header h1 { font-size:18px; margin:0; }
+  nav a { color:#fff; text-decoration:none; margin-left:14px; font-size:15px; }
+  nav a:hover, nav a:focus { text-decoration:underline; }
+  .hero { background:var(--light); padding:48px 20px; text-align:center; }
+  .hero h2 { color:var(--navy); font-size:28px; margin:0 0 10px; }
+  .hero p { max-width:680px; margin:0 auto; font-size:17px; }
+  .emergency { background:#FEF3F2; border:1px solid #FDA29B; color:var(--red); padding:12px 16px; border-radius:6px; margin:20px auto; max-width:680px; font-size:15px; }
+  section { padding:36px 20px; max-width:760px; margin:0 auto; }
+  section + section { border-top:1px solid var(--line); }
+  h3 { color:var(--navy); font-size:22px; margin:0 0 6px; }
+  .sub { color:#475467; margin:0 0 18px; font-size:15px; }
+  label { display:block; font-weight:bold; font-size:15px; margin:14px 0 4px; }
+  input, select, textarea { width:100%; padding:10px; font-size:16px; border:1px solid #98A2B3; border-radius:6px; font-family:inherit; }
+  textarea { min-height:110px; resize:vertical; }
+  input:focus, select:focus, textarea:focus, button:focus, nav a:focus { outline:3px solid #84CAFF; outline-offset:2px; }
+  .row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .check { display:flex; align-items:center; gap:8px; margin-top:16px; font-size:15px; font-weight:normal; }
+  .check input { width:auto; }
+  button { background:var(--blue); color:#fff; border:0; padding:12px 22px; font-size:16px; border-radius:6px; cursor:pointer; margin-top:20px; }
+  button:hover { background:var(--navy); }
+  button.secondary { background:#fff; color:var(--blue); border:1px solid var(--blue); }
+  .errors { color:var(--red); margin:14px 0 0; padding-left:20px; }
+  .hidden { display:none; }
+  .notice { background:var(--light); border-left:4px solid var(--blue); padding:14px 16px; border-radius:4px; margin-top:16px; }
+  .refid { font-size:26px; font-weight:bold; letter-spacing:2px; color:var(--navy); }
+  .ok { color:var(--ok); font-weight:bold; }
+  ol.timeline { padding-left:20px; margin:8px 0 0; }
+  ol.timeline li { margin-bottom:6px; }
+  .bar-row { display:grid; grid-template-columns:200px 1fr 40px; gap:10px; align-items:center; margin:8px 0; font-size:15px; }
+  .bar { background:#E4E7EC; border-radius:4px; height:18px; overflow:hidden; }
+  .bar span { display:block; height:100%; background:var(--blue); }
+  .small { font-size:13px; color:#475467; }
+  footer { background:#F9FAFB; text-align:center; padding:20px; font-size:13px; color:#475467; border-top:1px solid var(--line); }
+  @media (max-width:600px) { .row { grid-template-columns:1fr; } .bar-row { grid-template-columns:1fr 36px; } .bar-row .lbl { grid-column:1 / -1; } nav a { margin-left:10px; } }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>SIM · Security Incident Mapping</h1>
+  <nav aria-label="Main">
+    <a href="#report">Report</a>
+    <a href="#track">Track</a>
+    <a href="#stats">Crime stats</a>
+    <a href="#emergency">Emergency</a>
+  </nav>
+</header>
+
+<div class="hero">
+  <h2>See a security crime on campus? Report it quickly.</h2>
+  <p>SIM lets students, staff and landlords report stabbing, assault, theft, robbery and other security crimes in about two minutes. You can report anonymously and track your report with a Reference ID.</p>
+  <div class="emergency" role="note">
+    <strong>In immediate danger, call 112 or your campus security line now.</strong> SIM is not an emergency service and does not replace calling for help.
+  </div>
+</div>
+
+<!-- REPORT -->
+<section id="report" aria-labelledby="report-title">
+  <h3 id="report-title">Report an incident</h3>
+  <p class="sub">Fields marked * are required. Choose "Submit anonymously" to leave out your name and contact details.</p>
+
+  <form id="reportForm" novalidate>
+    <label for="category">Type of incident *</label>
+    <select id="category" required>
+      <option value="">Select a category</option>
+      <option>Stabbing or physical assault</option>
+      <option>Sexual assault</option>
+      <option>Theft or stealing</option>
+      <option>Armed robbery</option>
+      <option>Murder or attempted murder</option>
+      <option>Kidnapping</option>
+      <option>Vandalism</option>
+      <option>Cultism-related violence</option>
+      <option>Other</option>
+    </select>
+
+    <div class="row">
+      <div>
+        <label for="date">Date *</label>
+        <input type="date" id="date" required>
+      </div>
+      <div>
+        <label for="time">Time *</label>
+        <input type="time" id="time" required>
+      </div>
+    </div>
+
+    <label for="location">Location *</label>
+    <input type="text" id="location" placeholder="e.g. Footpath behind Hostel B, near the bush path" maxlength="150">
+
+    <label for="description">What happened? *</label>
+    <textarea id="description" maxlength="2000" placeholder="Describe what you saw or experienced (at least 20 characters)."></textarea>
+    <p class="small">Avoid names and personal identifying details. Do not put yourself at risk to gather information.</p>
+
+    <label for="role">Your role *</label>
+    <select id="role" required>
+      <option value="">Choose one</option>
+      <option>Student</option>
+      <option>Staff</option>
+      <option>Landlord / resident</option>
+      <option>Other community member</option>
+      <option>Prefer not to say</option>
+    </select>
+
+    <label for="evidence">Photos or videos (optional, up to 3 files, 10 MB each)</label>
+    <input type="file" id="evidence" accept="image/*,video/*" multiple>
+
+    <label class="check"><input type="checkbox" id="anonymous"> Submit anonymously</label>
+
+    <div id="contactFields">
+      <div class="row">
+        <div>
+          <label for="name">Your name *</label>
+          <input type="text" id="name" autocomplete="name">
+        </div>
+        <div>
+          <label for="contact">Email or phone *</label>
+          <input type="text" id="contact" autocomplete="email">
+        </div>
+      </div>
+      <p class="small">Used only to update you about your report. Never shown to other users.</p>
+    </div>
+
+    <label class="check"><input type="checkbox" id="consent"> <span>I understand this prototype is not monitored for emergencies and that submitting a report does not contact authorities.</span></label>
+
+    <button type="submit">Submit report</button>
+    <ul id="errors" class="errors hidden" role="alert"></ul>
+  </form>
+
+  <div id="confirmation" class="notice hidden" role="status">
+    <p class="ok">Your report has been received.</p>
+    <p>Save this Reference ID to track your report:</p>
+    <p class="refid" id="refId"></p>
+    <button type="button" class="secondary" id="copyBtn">Copy Reference ID</button>
+  </div>
+</section>
+
+<!-- TRACK -->
+<section id="track" aria-labelledby="track-title">
+  <h3 id="track-title">Track your report</h3>
+  <p class="sub">Enter the Reference ID you received when you submitted your report. No account is needed.</p>
+  <label for="trackInput">Reference ID</label>
+  <input type="text" id="trackInput" placeholder="SIM-XXXXXX" maxlength="10">
+  <button type="button" id="trackBtn">Check status</button>
+  <div id="trackResult" class="notice hidden" aria-live="polite"></div>
+</section>
+
+<!-- STATS -->
+<section id="stats" aria-labelledby="stats-title">
+  <h3 id="stats-title">Crime statistics</h3>
+  <p class="sub">Reports by category for the selected period. This is a demo view that reads from this browser only. The full version shows a live map from the server.</p>
+  <label for="period">Period</label>
+  <select id="period">
+    <option value="7">Last 7 days</option>
+    <option value="30" selected>Last 30 days</option>
+    <option value="90">Last 90 days</option>
+  </select>
+  <div id="statsOutput" style="margin-top:16px"></div>
+</section>
+
+<!-- EMERGENCY -->
+<section id="emergency" aria-labelledby="em-title">
+  <h3 id="em-title">Emergency contacts</h3>
+  <p class="sub">Save these numbers in your phone now.</p>
+  <ul>
+    <li><strong>National emergency:</strong> 112</li>
+    <li><strong>Campus security office:</strong> <span id="campusSecurity"><a href="tel:+2349048801668">+234 9048801668</a></span></li>
+  </ul>
+</section>
+
+<footer>
+  SIM – SEN202 mini web interface. Demo only: data is stored in this browser and is not sent to any server.
+</footer>
+
+<script>
+  // ---- Settings ----
+  const CAMPUS_SECURITY = "+234 9048801668";
+  const MAX_FILES = 3, MAX_MB = 10, MAX_SUBMISSIONS_PER_HOUR = 5;
+  const CATEGORY_LIST = ["Stabbing or physical assault","Sexual assault","Theft or stealing","Armed robbery","Murder or attempted murder","Kidnapping","Vandalism","Cultism-related violence","Other"];
+
+  document.getElementById("campusSecurity").textContent = CAMPUS_SECURITY;
+
+  // ---- Storage helpers (browser only, demo) ----
+  const load = (k, fallback) => { try { return JSON.parse(localStorage.getItem(k)) ?? fallback; } catch { return fallback; } };
+  const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
+
+  function newRefId() {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    const bytes = crypto.getRandomValues(new Uint8Array(6));
+    return "SIM-" + Array.from(bytes, b => chars[b % chars.length]).join("");
+  }
+
+  // ---- Anonymous toggle ----
+  const anon = document.getElementById("anonymous");
+  anon.addEventListener("change", () => {
+    document.getElementById("contactFields").classList.toggle("hidden", anon.checked);
+  });
+
+  // ---- Report form ----
+  const form = document.getElementById("reportForm");
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+    const errors = [];
+    const v = id => document.getElementById(id).value.trim();
+    const category = v("category"), date = v("date"), time = v("time");
+    const location = v("location"), description = v("description");
+    const name = v("name"), contact = v("contact");
+    const files = document.getElementById("evidence").files;
+
+    if (!category) errors.push("Choose a type of incident.");
+    if (!date) errors.push("Enter the date.");
+    if (!time) errors.push("Enter the time.");
+    if (location.length < 3) errors.push("Enter the location.");
+    if (description.length < 20) errors.push("Describe what happened in at least 20 characters.");
+    if (files.length > MAX_FILES) errors.push("You can attach up to " + MAX_FILES + " files.");
+    for (const f of files) if (f.size > MAX_MB * 1024 * 1024) errors.push(f.name + " is larger than " + MAX_MB + " MB.");
+    if (!anon.checked) {
+      if (!name) errors.push("Enter your name, or choose Submit anonymously.");
+      if (!contact) errors.push("Enter an email or phone number, or choose Submit anonymously.");
+    }
+
+    if (!v("role")) errors.push("Choose your role.");
+    if (!document.getElementById("consent").checked) errors.push("Tick the confirmation that this prototype does not contact authorities.");
+
+    // Simple rate limit: 5 submissions per hour per browser
+    const hourAgo = Date.now() - 3600 * 1000;
+    const recent = load("sim_submissions", []).filter(t => t > hourAgo);
+    if (recent.length >= MAX_SUBMISSIONS_PER_HOUR) errors.push("Too many reports from this device. Please try again later.");
+
+    const errBox = document.getElementById("errors");
+    errBox.textContent = "";
+    if (errors.length) {
+      errors.forEach(msg => { const li = document.createElement("li"); li.textContent = msg; errBox.appendChild(li); });
+      errBox.classList.remove("hidden");
+      document.getElementById("confirmation").classList.add("hidden");
+      return;
+    }
+    errBox.classList.add("hidden");
+
+    const now = new Date().toISOString();
+    const report = {
+      ref: newRefId(),
+      category, role: v("role"), incidentAt: date + "T" + time,
+      location, description,
+      anonymous: anon.checked,
+      reporter: anon.checked ? null : { name, contact },
+      evidenceNames: Array.from(files, f => f.name),
+      status: "Received",
+      history: [{ status: "Received", at: now }],
+      createdAt: now
+    };
+    const reports = load("sim_reports", []);
+    reports.push(report);
+    save("sim_reports", reports);
+    save("sim_submissions", [...recent, Date.now()]);
+
+    document.getElementById("refId").textContent = report.ref;
+    renderStats();
+    document.getElementById("confirmation").classList.remove("hidden");
+    form.reset();
+    anon.checked = false;
+    document.getElementById("consent").checked = false;
+    document.getElementById("contactFields").classList.remove("hidden");
+    document.getElementById("confirmation").scrollIntoView({ behavior: "smooth", block: "center" });
+  });
+
+  document.getElementById("copyBtn").addEventListener("click", async () => {
+    const ref = document.getElementById("refId").textContent;
+    try { await navigator.clipboard.writeText(ref); document.getElementById("copyBtn").textContent = "Copied"; }
+    catch { document.getElementById("copyBtn").textContent = "Copy failed: note it down"; }
+  });
+
+  // ---- Track ----
+  document.getElementById("trackBtn").addEventListener("click", () => {
+    const ref = document.getElementById("trackInput").value.trim().toUpperCase();
+    const box = document.getElementById("trackResult");
+    box.classList.remove("hidden");
+    box.textContent = "";
+    const found = load("sim_reports", []).find(r => r.ref === ref);
+    if (!found) { box.textContent = "No report found with that Reference ID. Check the code and try again."; return; }
+    const p = document.createElement("p");
+    p.innerHTML = "";
+    const strong = document.createElement("strong");
+    strong.textContent = "Current status: " + found.status;
+    p.appendChild(strong);
+    const ol = document.createElement("ol");
+    ol.className = "timeline";
+    found.history.forEach(h => {
+      const li = document.createElement("li");
+      li.textContent = h.status + " – " + new Date(h.at).toLocaleString();
+      ol.appendChild(li);
+    });
+    box.appendChild(p);
+    box.appendChild(ol);
+  });
+
+  // ---- Stats ----
+  function renderStats() {
+    const days = Number(document.getElementById("period").value);
+    const since = Date.now() - days * 86400000;
+    const reports = load("sim_reports", []).filter(r => new Date(r.createdAt).getTime() >= since);
+    const out = document.getElementById("statsOutput");
+    out.textContent = "";
+    if (reports.length === 0) {
+      const p = document.createElement("p");
+      p.textContent = "No reports in this period yet.";
+      out.appendChild(p);
+      return;
+    }
+    const counts = {};
+    CATEGORY_LIST.forEach(c => counts[c] = 0);
+    reports.forEach(r => { counts[r.category] = (counts[r.category] || 0) + 1; });
+    const max = Math.max(...Object.values(counts), 1);
+    const total = document.createElement("p");
+    total.textContent = "Total reports: " + reports.length;
+    out.appendChild(total);
+    Object.entries(counts).filter(([, n]) => n > 0).sort((a, b) => b[1] - a[1]).forEach(([cat, n]) => {
+      const row = document.createElement("div");
+      row.className = "bar-row";
+      const lbl = document.createElement("div"); lbl.className = "lbl"; lbl.textContent = cat;
+      const bar = document.createElement("div"); bar.className = "bar";
+      const fill = document.createElement("span"); fill.style.width = (n / max * 100) + "%";
+      bar.appendChild(fill);
+      const num = document.createElement("div"); num.textContent = n;
+      row.append(lbl, bar, num);
+      out.appendChild(row);
+    });
+  }
+  document.getElementById("period").addEventListener("change", renderStats);
+  renderStats();
+</script>
+</body>
+</html>
